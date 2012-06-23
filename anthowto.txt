@@ -1,0 +1,5 @@
+http://www.devdaily.com/blog/post/java/how-conditional-operation-ant-script-operating-system
+
+http://www.opennet.ru/base/dev/ant_10.txt.html
+
+http://vladimirlichonos.blogspot.com/2011/05/ant_29.html
