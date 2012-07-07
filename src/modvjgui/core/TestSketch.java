@@ -1,9 +1,5 @@
 package modvjgui.core;
-import modvjgui.core.Effect;
-import modvjgui.core.IEventListener;
-import modvjgui.core.Event;
 import processing.core.*;
-import processing.opengl.*;
 import codeanticode.glgraphics.*;
 import codeanticode.gsvideo.*;
 
@@ -14,7 +10,6 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
-import javax.swing.event.EventListenerList;
 
 import java.awt.event.*;
 
@@ -32,11 +27,9 @@ public class TestSketch extends PApplet implements ActionListener
   GSMovie mov;
   public JPanel controlPanel = new JPanel();
   Timer timer;
-  protected EventListenerList initListenerList = new EventListenerList();
-  protected EventListenerList selectListenerList = new EventListenerList();
   
   JButton openBtn, playBtn, pauseBtn, selectBtn;
-  
+
   protected JFileChooser fc = new JFileChooser();
   
   
@@ -48,10 +41,11 @@ public class TestSketch extends PApplet implements ActionListener
   public Effect[] effectQueue;// = new Effect[0];
   
   
-  public TestSketch()
-  {
+  public TestSketch( ){
+
   }
   
+
   public void setup()
   {
     size(160, 90, GLConstants.GLGRAPHICS);
@@ -89,8 +83,8 @@ public class TestSketch extends PApplet implements ActionListener
     selectBtn.addActionListener(this);
     controlPanel.add(selectBtn);
     
-    
-    fireInitEvent(new Event(this));
+    Observer.getInstance().fireEvent(EventMap.EVENT_SKETCH_INIT, new Event(this));
+   // fireInitEvent(new Event(this));
   }
   
   
@@ -200,22 +194,20 @@ public class TestSketch extends PApplet implements ActionListener
     play();
     selectBtn.setEnabled(false);
     openBtn.setEnabled(false);
-    fireSelectEvent(new Event(this));
+    Observer.getInstance().fireEvent(EventMap.EVENT_SKETCH_SELECTED, new Event(this));
+    //fireSelectEvent(new Event(this));
   }
   
   
   public void deselect()
   {
-    //selected = false;
-    //loop();
-    //noLoop();
-    
-    //img = new PImage();
+
     
     pause();
     mov.jump(0);
     selectBtn.setEnabled(true);
     openBtn.setEnabled(true);
+    Observer.getInstance().fireEvent(EventMap.EVENT_SKETCH_DESELECTED, new Event(this));
   }
   
   
@@ -228,7 +220,7 @@ public class TestSketch extends PApplet implements ActionListener
   
   
   
-  
+  @Override
   public void actionPerformed(ActionEvent e) 
   {
     Object source = e.getSource();
@@ -301,52 +293,7 @@ public class TestSketch extends PApplet implements ActionListener
       }
     }
   }
-  
-  //------------------------------------------------------------------
-  public void addInitEventListener(IEventListener listener) 
-  {
-    initListenerList.add(IEventListener.class, listener);
-  }
-  
-  public void removeInitEventListener(IEventListener listener) 
-  {
-    initListenerList.remove(IEventListener.class, listener);
-  }
-  
-  void fireInitEvent(Event evt) 
-  {
-    Object[] listeners = initListenerList.getListenerList();
-    for (int i=0; i<listeners.length; i+=2) 
-    {
-      if (listeners[i] == IEventListener.class) 
-      {
-        ((IEventListener)listeners[i+1]).eventOccurred(evt);
-       }
-     }   
-  }
-  
-  //------------------------------------------------------------------
-  public void addSelectEventListener(IEventListener listener) 
-  {
-    selectListenerList.add(IEventListener.class, listener);
-  }
-  
-  public void removeSelectEventListener(IEventListener listener) 
-  {
-    selectListenerList.remove(IEventListener.class, listener);
-  }
-  
-  void fireSelectEvent(Event evt) 
-  {
-    Object[] listeners = selectListenerList.getListenerList();
-    for (int i=0; i<listeners.length; i+=2) 
-    {
-      if (listeners[i] == IEventListener.class) 
-      {
-        ((IEventListener)listeners[i+1]).eventOccurred(evt);
-       }
-     }   
-  }
-  //------------------------------------------------------------------
+
+
 }
 

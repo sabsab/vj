@@ -1,6 +1,5 @@
 package modvjgui.view;
 
-import modvjgui.core.Channel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JButton;
@@ -11,12 +10,13 @@ import javax.swing.event.*;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.*;
-import modvjgui.core.IChannelComponent;
-import modvjgui.resources.MODVJgui;
+import java.lang.reflect.InvocationTargetException;
+import modvjgui.core.*;
 
 
 
-public class ChannelComponent extends JPanel implements ChangeListener, ActionListener, IChannelComponent
+
+public class ChannelComponent extends JPanel implements ChangeListener, IListener, ActionListener, IChannelComponent
 {
   //MODVJgui appComp;
   
@@ -25,16 +25,11 @@ public class ChannelComponent extends JPanel implements ChangeListener, ActionLi
   public JSlider opacitySlider;
   public JButton removeBtn, addBtn, clearBtn;
   
-  public ChannelComponent()
-  {
+  public ChannelComponent(){
     
     //appComp = appComponent;
 
     channel = new Channel();
-    
-    
-    
-    
     setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
     
     
@@ -67,25 +62,46 @@ public class ChannelComponent extends JPanel implements ChangeListener, ActionLi
     opacitySlider = new JSlider (JSlider.VERTICAL, 0, 100, 50);
     opacitySlider.addChangeListener(this);
     add(opacitySlider);
-  }
-  public void initialize(){
-      
-  }
-  public Channel getChannel(){
-      return channel;
-  }
+    
+
+    Observer.getInstance().addListener(EventMap.EVENT_SKETCH_SELECTED, this);
+    Observer.getInstance().addListener(EventMap.EVENT_SKETCH_DESELECTED, this);
+    }
   
-  public JButton getAddButton (){
-      return addBtn;
-  }
-  
-  public JButton getRemoveButton (){
-      return removeBtn;
-  }
-  
-  public JButton getClearButton (){
-      return clearBtn;
-  }
+    public void notify ( String eventType, Event event){
+
+        Notificator.invoke(this, eventType, event);
+    }
+    public void onSketchSelected (Event event){
+        Component oComponent = (Component) event.getSource();
+        getChannel().selectSketch( (IFootageComponent) oComponent.getParent() );
+        getRemoveButton().setEnabled(false);
+        getClearButton().setEnabled(true);
+
+    }
+    public void onSketchDeselected (Event event){
+        
+        getRemoveButton().setEnabled(true);
+
+    }  
+    public void initialize(){
+
+    }
+    public Channel getChannel(){
+	return channel;
+    }
+
+    public JButton getAddButton (){
+	return addBtn;
+    }
+
+    public JButton getRemoveButton (){
+	return removeBtn;
+    }
+
+    public JButton getClearButton (){
+	return clearBtn;
+    }
   
   void addSketch()
   {
@@ -111,7 +127,7 @@ public class ChannelComponent extends JPanel implements ChangeListener, ActionLi
     
   }
   
-  void remooveChannel()
+  void removeChannel()
   {
     Component[] components = panel.getComponents(); 
     Component component = null; 
@@ -139,7 +155,7 @@ public class ChannelComponent extends JPanel implements ChangeListener, ActionLi
     
     if(source == removeBtn)
     {
-      remooveChannel();
+      removeChannel();
     }
     else if(source == addBtn)
     {

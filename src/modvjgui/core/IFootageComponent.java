@@ -18,10 +18,6 @@ public interface IFootageComponent {
 
     void setEffectQueue(Effect[] effectQueue);
     void initialize();
-    void addInitEventListener(IEventListener listener); 
-    void removeInitEventListener(IEventListener listener); 
-    void addSelectEventListener(IEventListener listener);
-    void removeSelectEventListener(IEventListener listener) ;
-    void addDeselectEventListener(IEventListener listener);
+
     void deselect();
 }

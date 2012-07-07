@@ -14,7 +14,7 @@ import modvjgui.core.IFootageComponent;
 public class GuiLocator {
 
     private String  footageComponentClass="modvjgui.view.SketchPanel";
-    
+    //private String footageComponentClass = "modvjgui.resources.FootageComponent";
     private String  channelComponentClass="modvjgui.view.ChannelComponent";
     private static GuiLocator oInstance;
     public static GuiLocator getInstance (){

@@ -190,20 +190,20 @@ public class ChannelComponent extends javax.swing.JPanel implements  IChannelCom
       return new Channel();
     }
     
-      public JButton getAddButton (){
-          return new JButton();
-      }
+    public JButton getAddButton (){
+      return new JButton();
+    }
 
-      public JButton getRemoveButton (){
-          return new JButton();
-      }
+    public JButton getRemoveButton (){
+      return new JButton();
+    }
 
-      public JButton getClearButton (){
-          return new JButton();
-      }
-      public void removeAll(){
-          
-      }
+    public JButton getClearButton (){
+      return new JButton();
+    }
+    public void removeAll(){
+
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

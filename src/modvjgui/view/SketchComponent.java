@@ -1,6 +1,6 @@
 package modvjgui.view;
-import modvjgui.core.IEventListener;
-import modvjgui.core.Event;
+
+import java.awt.Component;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.BoxLayout;
@@ -8,112 +8,96 @@ import javax.swing.Box;
 
 import java.awt.Dimension;
 import java.awt.event.*;
-import modvjgui.core.IChannelComponent;
-import modvjgui.core.IFootageComponent;
+
+import modvjgui.core.*;
 
 
-public class SketchComponent extends JPanel implements ActionListener 
-{
+
+public class SketchComponent extends JPanel implements ActionListener, IListener{
   
-  IChannelComponent channelComp;
-  
-  EffectQueueComponent effectQueueComponent;
-  
-  protected IFootageComponent sketch;
-  JButton removeBtn;
-  
-  
-  public SketchComponent(IChannelComponent channelComponent)
-  {
-    channelComp = channelComponent;
-    
-    effectQueueComponent = new EffectQueueComponent();
-    
-    
-    effectQueueComponent.addSetQueueEventListener(new IEventListener()
-    {
-      public void eventOccurred(Event evt)
-      {
-        //System.out.println("sketch = " + sketch);
-        sketch.setEffectQueue(effectQueueComponent.effectQueue);
-      }
-    });
-    
-    
-    GuiLocator oLocator = GuiLocator.getInstance();
-    sketch = oLocator.getFootageComponent();
-    System.out.println(sketch);
-    //TODO: дописать
-    //sketch = new FootageComponent();
-    
-    
-    sketch.addInitEventListener(new IEventListener()
-    {
-      public void eventOccurred(Event evt)
-      {
-        sketch.removeInitEventListener(this);
+    IChannelComponent channelComp;
+
+    EffectQueueComponent effectQueueComponent;
+
+    protected IFootageComponent sketch;
+    JButton removeBtn;
+
+
+    public SketchComponent(IChannelComponent channelComponent){
         
-        //System.out.println("SketchComponent: --> " + effectQueueComponent.effectQueue);
-        
-        sketch.setEffectQueue(effectQueueComponent.effectQueue);
-        
-        
-        removeBtn.setEnabled(true);
-        effectQueueComponent.addBtn.setEnabled(true);
-      }
-    });
-    
-    
-    sketch.addSelectEventListener(new IEventListener()
-    {
-      public void eventOccurred(Event evt)
-      {
-        channelComp.getChannel().selectSketch(sketch);
-        channelComp.getRemoveButton().setEnabled(false);
-        channelComp.getClearButton().setEnabled(true);
-        removeBtn.setEnabled(false);
-      }
-    });
-    
-    
-    sketch.addDeselectEventListener(new IEventListener()
-    {
-      public void eventOccurred(Event evt)
-      {
-        channelComp.getRemoveButton().setEnabled(true);
-        removeBtn.setEnabled(true);
-      }
-    });
-    
-    
-    setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-    
-    add(Box.createRigidArea(new Dimension(0, 4)));
-    
-    
-    removeBtn = new JButton("Remoove sketch");
-    removeBtn.setEnabled(false);
-    removeBtn.addActionListener(this);
-    add(removeBtn);
-    
-    add(Box.createRigidArea(new Dimension(0, 2)));
-    
-    add( (java.awt.Component) sketch);
-    
-    add(Box.createRigidArea(new Dimension(0, 2)));
-    
-    //add(effectQueueComponent);
-    
-  }
-  
-  public void actionPerformed(ActionEvent e) 
-  {
-    Object source = e.getSource();
-    
-    if(source == removeBtn)
-    {
-      channelComp.removeSketch(this);
+	channelComp = channelComponent;
+
+	effectQueueComponent = new EffectQueueComponent();
+
+
+	GuiLocator oLocator = GuiLocator.getInstance();
+	sketch = oLocator.getFootageComponent();
+	
+	// Вещаем события
+	Observer.getInstance().addListener(EventMap.EVENT_SKETCH_INIT, this);
+	Observer.getInstance().addListener(EventMap.EVENT_SKETCH_SELECTED, this);
+	Observer.getInstance().addListener(EventMap.EVENT_SKETCH_DESELECTED, this);
+
+
+	setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+
+	add(Box.createRigidArea(new Dimension(0, 4)));
+
+
+	removeBtn = new JButton("Remoove sketch");
+	removeBtn.setEnabled(false);
+	removeBtn.addActionListener(this);
+	add(removeBtn);
+
+	add(Box.createRigidArea(new Dimension(0, 2)));
+
+	add( (java.awt.Component) sketch);
+
+	add(Box.createRigidArea(new Dimension(0, 2)));
+
+	add(effectQueueComponent);
+
     }
-  }
+    @Override
+    public void notify ( String eventType, Event event){
+        Notificator.invoke(this, eventType, event);
+    }
+    
+    
+    public void onSketchInit ( Event event){
+
+        Component oComponent = (Component) event.getSource();
+	// Если событие от нашего футажа, обработаем его
+        if ( (IFootageComponent) oComponent.getParent()  == sketch ){
+	
+	    sketch.setEffectQueue(effectQueueComponent.effectQueue);
+	    removeBtn.setEnabled(true);
+	    effectQueueComponent.addBtn.setEnabled(true); 
+	}
+
+    }
+    public void onSketchSelected (Event event){
+	Component oComponent = (Component) event.getSource();
+	// Если событие от нашего футажа, обработаем его
+        if ( (IFootageComponent) oComponent.getParent()  == sketch ){
+	    removeBtn.setEnabled(false);   
+	}
+    }
+    public void onSketchDeselected (Event event){
+	
+	Component oComponent = (Component) event.getSource();
+	// Если событие от нашего футажа, обработаем его
+        if ( (IFootageComponent) oComponent.getParent()  == sketch ){
+	    removeBtn.setEnabled(true);   
+	}
+     
+    }
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+
+        if(source == removeBtn){
+            channelComp.removeSketch(this);
+        }
+    }
   
 }

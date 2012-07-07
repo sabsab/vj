@@ -12,23 +12,20 @@ import modvjgui.core.Event;
 import processing.core.*;
 
 import javax.swing.event.EventListenerList;
+import modvjgui.core.EventMap;
 import modvjgui.core.IFootageComponent;
+import modvjgui.core.Observer;
 
 /**
  *
  * @author User
  */
 public class FootageComponent extends javax.swing.JPanel implements IFootageComponent{
-  TestSketch testSketch;
-  
-  protected EventListenerList initListenerList, selectListenerList, deselectListenerList;
 
+    TestSketch testSketch;
+    @Override
     public void initialize(){
         
-        initListenerList = new EventListenerList();
-        selectListenerList = new EventListenerList();
-        deselectListenerList = new EventListenerList();
-
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
 
@@ -37,26 +34,13 @@ public class FootageComponent extends javax.swing.JPanel implements IFootageComp
         add(testSketch);
         testSketch.init();
 
-        testSketch.addInitEventListener(new IEventListener(){
-            @Override
-            public void eventOccurred(Event evt){
-
-                //System.out.println("Sketch: --> " + effectQueue);
-
-                testSketch.removeInitEventListener(this);
-                add(testSketch.controlPanel);
-                revalidate();
-                fireInitEvent(new Event(this));
-            }
-        });
-
-        testSketch.addSelectEventListener(new IEventListener(){
-            @Override
-            public void eventOccurred(Event evt){
-                fireSelectEvent(new Event(this));
-            }
-        });        
     }
+    public void onSketchInit ( Event event){
+        // testSketch.removeInitEventListener(this);
+        add(testSketch.controlPanel);
+        revalidate();
+
+    }    
     /**
      * Creates new form FootageComponent
      */
@@ -66,111 +50,39 @@ public class FootageComponent extends javax.swing.JPanel implements IFootageComp
   
              
     }
-  public void clear()
-  {
-    if(testSketch != null)
-    {
-      testSketch.clear();
-      testSketch.stop();
-      testSketch.dispose();
-      testSketch = null;
-      removeAll();
-      revalidate();
+    public void clear(){
+        
+        if(testSketch != null){
+
+          testSketch.clear();
+          testSketch.stop();
+          testSketch.dispose();
+          testSketch = null;
+          removeAll();
+          revalidate();
+        }
     }
-  }
   
-  public void deselect()
-  {
-    testSketch.deselect();
-    fireDeselectEvent(new Event(this));
-  }
+    public void deselect(){
+        
+        testSketch.deselect();
+       // fireDeselectEvent(new Event(this));
+        Observer.getInstance().fireEvent(EventMap.EVENT_SKETCH_DESELECTED, new Event(this));
+    }
+
   
-  
-  public void setEffectQueue(Effect[] effectQueue)
-  {
+    public void setEffectQueue(Effect[] effectQueue){
     //System.out.println("Sketch: --> " + effectQueue);
-    testSketch.effectQueue = effectQueue;
-  }
+        testSketch.effectQueue = effectQueue;
+    }
   
   
-  public PImage getImage()
-  {
-    return testSketch.getImage();
-  }
+    public PImage getImage(){
+        
+        return testSketch.getImage();
+    }
   
-  //------------------------------------------------------------------
-  public void addInitEventListener(IEventListener listener) 
-  {
-      try {
-        initListenerList.add(IEventListener.class, listener);
-      }
-      catch (NullPointerException oException){
-          System.out.printf(oException.getMessage());
-      }
-  }
-  
-  public void removeInitEventListener(IEventListener listener) 
-  {
-    initListenerList.remove(IEventListener.class, listener);
-  }
-  
-  void fireInitEvent(Event evt) 
-  {
-    Object[] listeners = initListenerList.getListenerList();
-    for (int i=0; i<listeners.length; i+=2) 
-    {
-      if (listeners[i] == IEventListener.class) 
-      {
-        ((IEventListener)listeners[i+1]).eventOccurred(evt);
-       }
-     }   
-  }
-  
-  //------------------------------------------------------------------
-  public void addSelectEventListener(IEventListener listener) 
-  {
-    selectListenerList.add(IEventListener.class, listener);
-  }
-  
-  public void removeSelectEventListener(IEventListener listener) 
-  {
-    selectListenerList.remove(IEventListener.class, listener);
-  }
-  
-  void fireSelectEvent(Event evt) 
-  {
-    Object[] listeners = selectListenerList.getListenerList();
-    for (int i=0; i<listeners.length; i+=2) 
-    {
-      if (listeners[i] == IEventListener.class) 
-      {
-        ((IEventListener)listeners[i+1]).eventOccurred(evt);
-       }
-     }   
-  }
-  
-  //------------------------------------------------------------------
-  public void addDeselectEventListener(IEventListener listener) 
-  {
-    deselectListenerList.add(IEventListener.class, listener);
-  }
-  
-  public void removeDeselectEventListener(IEventListener listener) 
-  {
-    deselectListenerList.remove(IEventListener.class, listener);
-  }
-  
-  void fireDeselectEvent(Event evt) 
-  {
-    Object[] listeners = deselectListenerList.getListenerList();
-    for (int i=0; i<listeners.length; i+=2) 
-    {
-      if (listeners[i] == IEventListener.class) 
-      {
-        ((IEventListener)listeners[i+1]).eventOccurred(evt);
-       }
-     }   
-  }
+
   
     /** This method is called from within the constructor to
      * initialize the form.

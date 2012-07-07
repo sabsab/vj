@@ -11,7 +11,8 @@
     <description>Builds, tests, and runs the project MODVJgui.</description>
     <import file="nbproject/build-impl.xml"/>
  <target name="-post-jar"> 
-        <copydir src="modules/libs/gstreamer"  dest="${dist.dir}/gstreamer"/> 
+        <copydir src="modules/libs/gstreamer"  dest="${dist.dir}/gstreamer"/>
+        <copydir src="modules/libs/opengl"  dest="${dist.dir}/lib"/> 
     </target> 
     <!--
 

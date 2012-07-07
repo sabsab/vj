@@ -4,8 +4,6 @@
  */
 package modvjgui.core;
 
-
-import javax.swing.JButton;
 import modvjgui.view.SketchComponent;
 
 /**
@@ -17,8 +15,7 @@ public interface IChannelComponent {
     public void removeSketch(SketchComponent sketchComponent);
     public void initialize();
     public Channel getChannel();
-    public JButton getAddButton();
-    public JButton getClearButton();
-    public JButton getRemoveButton();
+
+
     public void removeAll();
 }
